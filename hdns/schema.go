@@ -40,18 +40,41 @@ func ZoneFromSchema(s schema.Zone) *Zone {
 	return zone
 }
 
+// BaseRecordFromSchema converts a schema.BaseRecord to a BaseRecord.
+func BaseRecordFromSchema(s schema.BaseRecord) *BaseRecord {
+	return &BaseRecord{
+		Name:   s.Name,
+		TTL:    s.TTL,
+		Type:   s.Type,
+		Value:  s.Value,
+		ZoneID: s.ZoneID,
+	}
+}
+
 // RecordFromSchema converts a schema.Record to a Record.
 func RecordFromSchema(s schema.Record) *Record {
 	return &Record{
-		ID:       s.ID,
-		Name:     s.Name,
-		TTL:      s.TTL,
-		Type:     s.Type,
-		Value:    s.Value,
-		ZoneID:   s.ZoneID,
-		Created:  s.Created,
-		Modified: s.Modified,
+		BaseRecord: *BaseRecordFromSchema(s.BaseRecord),
+		ID:         s.ID,
+		Created:    s.Created,
+		Modified:   s.Modified,
 	}
+}
+
+func BaseRecordsFromSchema(s []schema.BaseRecord) []*BaseRecord {
+	var baseRecords []*BaseRecord
+	for _, r := range s {
+		baseRecords = append(baseRecords, BaseRecordFromSchema(r))
+	}
+	return baseRecords
+}
+
+func RecordsFromSchema(s []schema.Record) []*Record {
+	var records []*Record
+	for _, r := range s {
+		records = append(records, RecordFromSchema(r))
+	}
+	return records
 }
 
 // PaginationFromSchema converts a schema.MetaPagination to a Pagination.

@@ -8,13 +8,17 @@ import (
 	"gitlab.com/alxrem/hdns-go/hdns/schema"
 )
 
+type BaseRecord struct {
+	Name   string
+	TTL    int
+	Type   string
+	Value  string
+	ZoneID string
+}
+
 type Record struct {
+	BaseRecord
 	ID       string
-	Name     string
-	TTL      int
-	Type     string
-	Value    string
-	ZoneID   string
 	Created  schema.Time
 	Modified schema.Time
 }
@@ -138,4 +142,108 @@ func (c *RecordClient) Update(ctx context.Context, id string, opts RecordUpdateO
 	}
 
 	return RecordFromSchema(respBody.Record), resp, nil
+}
+
+// RecordBulkCreateOpts specifies parameters for creating several Records at once.
+type RecordBulkCreateOpts struct {
+	Records []RecordCreateOpts
+}
+
+type RecordBulkCreateResult struct {
+	InvalidRecords []*BaseRecord
+	Records        []*Record
+	ValidRecords   []*BaseRecord
+}
+
+// BulkCreate creates several Records at once.
+func (c *RecordClient) BulkCreate(ctx context.Context, opts RecordBulkCreateOpts) (RecordBulkCreateResult, *Response, error) {
+	reqBody := schema.RecordBulkCreateRequest{
+		Records: []schema.RecordCreateRequest{},
+	}
+
+	for _, record := range opts.Records {
+		reqRecordBody := schema.RecordCreateRequest{
+			Name:   record.Name,
+			TTL:    record.TTL,
+			Type:   record.Type,
+			Value:  record.Value,
+			ZoneID: record.ZoneID,
+		}
+		reqBody.Records = append(reqBody.Records, reqRecordBody)
+	}
+
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return RecordBulkCreateResult{}, nil, err
+	}
+
+	req, err := c.client.NewRequest(ctx, "POST", "/records/bulk", bytes.NewReader(reqBodyData))
+	if err != nil {
+		return RecordBulkCreateResult{}, nil, err
+	}
+
+	var respBody schema.RecordBulkCreateResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return RecordBulkCreateResult{}, resp, err
+	}
+
+	result := RecordBulkCreateResult{
+		InvalidRecords: BaseRecordsFromSchema(respBody.InvalidRecords),
+		Records:        RecordsFromSchema(respBody.Records),
+		ValidRecords:   BaseRecordsFromSchema(respBody.ValidRecords),
+	}
+
+	return result, resp, nil
+}
+
+// RecordBulkUpdateOpts specifies parameters for creating several Records at once.
+type RecordBulkUpdateOpts struct {
+	Records []RecordUpdateOpts
+}
+
+type RecordBulkUpdateResult struct {
+	FailedRecords []*BaseRecord
+	Records       []*Record
+}
+
+// BulkUpdate updates several Records at once.
+func (c *RecordClient) BulkUpdate(ctx context.Context, opts RecordBulkUpdateOpts) (RecordBulkUpdateResult, *Response, error) {
+	reqBody := schema.RecordBulkUpdateRequest{
+		Records: []schema.RecordUpdateRequest{},
+	}
+
+	for _, record := range opts.Records {
+		reqRecordBody := schema.RecordUpdateRequest{
+			Name:   record.Name,
+			TTL:    record.TTL,
+			Type:   record.Type,
+			Value:  record.Value,
+			ZoneID: record.ZoneID,
+		}
+		reqBody.Records = append(reqBody.Records, reqRecordBody)
+	}
+
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return RecordBulkUpdateResult{}, nil, err
+	}
+
+	req, err := c.client.NewRequest(ctx, "POST", "/records/bulk", bytes.NewReader(reqBodyData))
+	if err != nil {
+		return RecordBulkUpdateResult{}, nil, err
+	}
+
+	var respBody schema.RecordBulkUpdateResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return RecordBulkUpdateResult{}, resp, err
+	}
+
+	result := RecordBulkUpdateResult{
+		FailedRecords: BaseRecordsFromSchema(respBody.FailedRecords),
+		Records:       RecordsFromSchema(respBody.Records),
+	}
+
+	return result, resp, nil
 }
