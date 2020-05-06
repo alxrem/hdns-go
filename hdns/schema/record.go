@@ -62,6 +62,10 @@ type RecordBulkUpdateResponse struct {
 	Records       []Record     `json:"records"`
 }
 
+type RecordListResponse struct {
+	Records []Record `json:"records"`
+}
+
 type RecordAllResponse struct {
 	Records []Record `json:"records"`
 }

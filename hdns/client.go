@@ -312,9 +312,8 @@ type Ratelimit struct {
 
 // ListOpts specifies options for listing resources.
 type ListOpts struct {
-	Page          int    // Page (starting at 1)
-	PerPage       int    // Items per page (0 means default)
-	LabelSelector string // Label selector for filtering by labels
+	Page    int // Page (starting at 1)
+	PerPage int // Items per page (0 means default)
 }
 
 func (l ListOpts) values() url.Values {
@@ -324,9 +323,6 @@ func (l ListOpts) values() url.Values {
 	}
 	if l.PerPage > 0 {
 		vals.Add("per_page", strconv.Itoa(l.PerPage))
-	}
-	if len(l.LabelSelector) > 0 {
-		vals.Add("label_selector", l.LabelSelector)
 	}
 	return vals
 }

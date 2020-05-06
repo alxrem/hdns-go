@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"gitlab.com/alxrem/hdns-go/hdns/schema"
+	"net/url"
 )
 
 type BaseRecord struct {
@@ -42,6 +43,40 @@ func (c *RecordClient) GetByID(ctx context.Context, id string) (*Record, *Respon
 		return nil, resp, err
 	}
 	return RecordFromSchema(body.Record), resp, nil
+}
+
+// ActionListOpts specifies options for listing actions.
+type RecordListOpts struct {
+	ListOpts
+	ZoneID string
+}
+
+func (l RecordListOpts) values() url.Values {
+	vals := l.ListOpts.values()
+	if l.ZoneID != "" {
+		vals.Add("zone_id", l.ZoneID)
+	}
+	return vals
+}
+
+// List returns a list of actions for a specific page.
+func (c *RecordClient) List(ctx context.Context, opts RecordListOpts) ([]*Record, *Response, error) {
+	path := "/records?" + opts.values().Encode()
+	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body schema.RecordListResponse
+	resp, err := c.client.Do(req, &body)
+	if err != nil {
+		return nil, nil, err
+	}
+	records := make([]*Record, 0, len(body.Records))
+	for _, record := range body.Records {
+		records = append(records, RecordFromSchema(record))
+	}
+	return records, resp, nil
 }
 
 func (c *RecordClient) All(ctx context.Context) ([]*Record, error) {
