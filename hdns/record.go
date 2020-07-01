@@ -156,8 +156,11 @@ type RecordUpdateOpts struct {
 // Update updates a Record.
 func (c *RecordClient) Update(ctx context.Context, id string, opts RecordUpdateOpts) (*Record, *Response, error) {
 	reqBody := schema.RecordUpdateRequest{
-		Name: opts.Name,
-		TTL:  opts.TTL,
+		Name:   opts.Name,
+		TTL:    opts.TTL,
+		Type:   opts.Type,
+		Value:  opts.Value,
+		ZoneID: opts.ZoneID,
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
