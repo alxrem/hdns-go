@@ -37,9 +37,6 @@ func (c *RecordClient) GetByID(ctx context.Context, id string) (*Record, *Respon
 	var body schema.RecordGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		if IsError(err, ErrorCodeNotFound) {
-			return nil, resp, nil
-		}
 		return nil, resp, err
 	}
 	return RecordFromSchema(body.Record), resp, nil
