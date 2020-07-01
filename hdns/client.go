@@ -250,7 +250,7 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 	if err := json.Unmarshal(body, &respBody); err != nil {
 		return nil
 	}
-	if respBody.Error.Code == "" && respBody.Error.Message == "" {
+	if respBody.Error.Code == 0 && respBody.Error.Message == "" {
 		return nil
 	}
 	return ErrorFromSchema(respBody.Error)

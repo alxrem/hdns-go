@@ -4,10 +4,8 @@ import "encoding/json"
 
 // Error represents the schema of an error response.
 type Error struct {
-	Code       string          `json:"code"`
-	Message    string          `json:"message"`
-	DetailsRaw json.RawMessage `json:"details"`
-	Details    interface{}
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 // UnmarshalJSON overrides default json unmarshalling.
@@ -16,14 +14,6 @@ func (e *Error) UnmarshalJSON(data []byte) (err error) {
 	alias := (*Alias)(e)
 	if err = json.Unmarshal(data, alias); err != nil {
 		return
-	}
-	switch e.Code {
-	case "invalid_input":
-		details := ErrorDetailsInvalidInput{}
-		if err = json.Unmarshal(e.DetailsRaw, &details); err != nil {
-			return
-		}
-		alias.Details = details
 	}
 	return
 }

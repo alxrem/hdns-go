@@ -95,19 +95,5 @@ func ErrorFromSchema(s schema.Error) Error {
 		Code:    ErrorCode(s.Code),
 		Message: s.Message,
 	}
-
-	switch d := s.Details.(type) {
-	case schema.ErrorDetailsInvalidInput:
-		details := ErrorDetailsInvalidInput{
-			Fields: []ErrorDetailsInvalidInputField{},
-		}
-		for _, field := range d.Fields {
-			details.Fields = append(details.Fields, ErrorDetailsInvalidInputField{
-				Name:     field.Name,
-				Messages: field.Messages,
-			})
-		}
-		e.Details = details
-	}
 	return e
 }
