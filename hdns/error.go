@@ -15,22 +15,10 @@ const (
 type Error struct {
 	Code    ErrorCode
 	Message string
-	Details interface{}
 }
 
 func (e Error) Error() string {
 	return fmt.Sprintf("%s (%d)", e.Message, e.Code)
-}
-
-// ErrorDetailsInvalidInput contains the details of an 'invalid_input' error.
-type ErrorDetailsInvalidInput struct {
-	Fields []ErrorDetailsInvalidInputField
-}
-
-// ErrorDetailsInvalidInputField contains the validation errors reported on a field.
-type ErrorDetailsInvalidInputField struct {
-	Name     string
-	Messages []string
 }
 
 // IsError returns whether err is an API error with the given error code.

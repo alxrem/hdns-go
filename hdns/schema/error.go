@@ -22,12 +22,3 @@ func (e *Error) UnmarshalJSON(data []byte) (err error) {
 type ErrorResponse struct {
 	Error Error `json:"error"`
 }
-
-// ErrorDetailsInvalidInput defines the schema of the Details field
-// of an error with code 'invalid_input'.
-type ErrorDetailsInvalidInput struct {
-	Fields []struct {
-		Name     string   `json:"name"`
-		Messages []string `json:"messages"`
-	} `json:"fields"`
-}

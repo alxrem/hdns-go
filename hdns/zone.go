@@ -47,6 +47,9 @@ func (c *ZoneClient) GetByID(ctx context.Context, id string) (*Zone, *Response, 
 	var body schema.ZoneGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
+		if IsError(err, ErrorCodeNotFound) {
+			return nil, resp, nil
+		}
 		return nil, resp, err
 	}
 	return ZoneFromSchema(body.Zone), resp, nil
