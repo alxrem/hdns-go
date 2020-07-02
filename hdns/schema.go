@@ -1,7 +1,7 @@
 package hdns
 
 import (
-	"gitlab.com/alxrem/hdns-go/hdns/schema"
+	"github.com/alxrem/hdns-go/hdns/schema"
 )
 
 // This file provides converter functions to convert models in the

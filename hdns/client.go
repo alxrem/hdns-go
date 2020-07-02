@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gitlab.com/alxrem/hdns-go/hdns/schema"
+	"github.com/alxrem/hdns-go/hdns/schema"
 	"io"
 	"io/ioutil"
 	"math"
